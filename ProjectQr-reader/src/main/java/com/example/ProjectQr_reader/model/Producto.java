@@ -59,7 +59,7 @@ public class Producto {
     @Column(name = "Activo")
     private Boolean activo;
 
-    @Column(name = "clienteId")
+    @Column(name = "ClienteId")
     private Integer clienteId;
 
     @Column(name = "Moneda")

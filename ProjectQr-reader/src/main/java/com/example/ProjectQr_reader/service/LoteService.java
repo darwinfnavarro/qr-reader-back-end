@@ -1,10 +1,12 @@
 package com.example.ProjectQr_reader.service;
 
 import com.example.ProjectQr_reader.model.Lote;
+import com.example.ProjectQr_reader.model.Producto;
 import com.example.ProjectQr_reader.model.Registro;
 import com.example.ProjectQr_reader.model.RegistrosAutorizados;
 import com.example.ProjectQr_reader.model.RegistrosRechazados;
 import com.example.ProjectQr_reader.repository.LoteRepository;
+import com.example.ProjectQr_reader.repository.ProductoRepository;
 import com.example.ProjectQr_reader.repository.RegistroRepository;
 import com.example.ProjectQr_reader.repository.RegistrosAutorizadosRepository;
 import com.example.ProjectQr_reader.repository.RegistrosRechazadosRepository;
@@ -26,6 +28,9 @@ public class LoteService {
     private RegistroRepository registroRepository;
 
     @Autowired
+    private ProductoRepository productoRepository;
+
+    @Autowired
     private RegistrosRechazadosRepository registrosRechazadosRepository;
 
     @Autowired
@@ -45,6 +50,7 @@ public class LoteService {
 
     /**
      * Autoriza un lote, cambia su estado a "Autorizado" y mueve los registros pendientes a la tabla de autorizados.
+     * Además, actualiza la descripción del producto y el clienteId en la tabla Productos.
      *
      * @param loteId El ID del lote a autorizar.
      * @return Lote actualizado.
@@ -57,8 +63,15 @@ public class LoteService {
         List<Registro> registrosPendientes = registroRepository.findRegistrosByLoteEstado("Pendiente");
 
         for (Registro registro : registrosPendientes) {
+            // Actualizar la descripción y el clienteId del producto
+            Producto producto = registro.getProducto();
+            producto.setDescripcion(registro.getServicio().getDescripcion());
+            producto.setClienteId(registro.getBodega().getId());
+            productoRepository.save(producto); // Guardar los cambios en el producto
+
+            // Mover registro a la tabla de autorizados
             RegistrosAutorizados registroAutorizado = new RegistrosAutorizados();
-            registroAutorizado.setProducto(registro.getProducto());
+            registroAutorizado.setProducto(producto);
             registroAutorizado.setBodega(registro.getBodega());
             registroAutorizado.setServicio(registro.getServicio());
             registroAutorizado.setLote(registro.getLote());
