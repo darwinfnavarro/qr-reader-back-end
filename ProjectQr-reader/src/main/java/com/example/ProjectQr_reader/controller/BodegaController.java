@@ -24,9 +24,7 @@ public class BodegaController {
         return ResponseEntity.ok(bodegas);
     }
 
-    /**
-     * Endpoint para obtener una bodega por su ID
-     */
+
     @GetMapping("/{id}")
     public ResponseEntity<Bodega> obtenerBodegaPorId(@PathVariable Integer id) {
         Bodega bodega = bodegaService.obtenerBodegaPorId(id);

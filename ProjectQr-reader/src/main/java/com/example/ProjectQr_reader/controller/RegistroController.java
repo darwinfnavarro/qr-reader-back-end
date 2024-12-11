@@ -46,6 +46,27 @@ public class RegistroController {
         return registroService.obtenerRegistrosPorEstadoPendiente();
     }
 
+    /**
+     * Endpoint para obtener los registros autorizados.
+     * @return Lista de registros autorizados.
+     */
+    @GetMapping("/autorizados")
+    public List<RegistroDTO> obtenerRegistrosAutorizados() {
+        return registroService.obtenerRegistrosAutorizados();
+    }
+
+    /**
+     * Endpoint para obtener los registros rechazados.
+     * @return Lista de registros rechazados.
+     */
+    @GetMapping("/rechazados")
+    public List<RegistroDTO> obtenerRegistrosRechazados() {
+        return registroService.obtenerRegistrosRechazados();
+    }
+
+
+
+
 
 
 

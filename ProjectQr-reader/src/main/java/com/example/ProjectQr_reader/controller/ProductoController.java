@@ -20,6 +20,7 @@ public class ProductoController {
      * @return Los detalles del producto con el IMEI proporcionado.
      */
     @GetMapping("/producto/imei/{imei}")
+
     public ResponseEntity<Producto> obtenerProductoPorImei(@PathVariable String imei) {
         Producto producto = productoService.obtenerProductoPorImei(imei);
         return ResponseEntity.ok(producto);

@@ -2,9 +2,11 @@ package com.example.ProjectQr_reader.service;
 
 import com.example.ProjectQr_reader.model.Lote;
 import com.example.ProjectQr_reader.model.Registro;
+import com.example.ProjectQr_reader.model.RegistrosAutorizados;
 import com.example.ProjectQr_reader.model.RegistrosRechazados;
 import com.example.ProjectQr_reader.repository.LoteRepository;
 import com.example.ProjectQr_reader.repository.RegistroRepository;
+import com.example.ProjectQr_reader.repository.RegistrosAutorizadosRepository;
 import com.example.ProjectQr_reader.repository.RegistrosRechazadosRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -22,6 +24,9 @@ public class LoteService {
 
     @Autowired
     private RegistrosRechazadosRepository registrosRechazadosRepository;
+
+    @Autowired
+    private RegistrosAutorizadosRepository registrosAutorizadosRepository;
 
     /**
      * Crea un lote si no existe uno con la misma fecha actual.
@@ -50,6 +55,23 @@ public class LoteService {
 
         // Cambiar el estado del lote a "Autorizado" usando la constante de Lote
         lote.setEstado(Lote.ESTADO_AUTORIZADO);
+        List<Registro> registrosPendientes = registroRepository.findRegistrosByLoteEstado("Pendiente");
+
+        for (Registro registro : registrosPendientes) {
+            // Crear el nuevo registro para la tabla de rechazados
+            RegistrosAutorizados registroAutorizado = new RegistrosAutorizados();
+            registroAutorizado.setProductoId(registro.getProducto().getId());
+            registroAutorizado.setBodegaId(registro.getBodega().getId());
+            registroAutorizado.setServicioId(registro.getServicio().getId());
+            registroAutorizado.setLoteId(loteId);
+            registroAutorizado.setFechaRegistro(LocalDateTime.now());
+
+            // Guardar el registro en la tabla de rechazados
+            registrosAutorizadosRepository.save(registroAutorizado);
+
+            // Eliminar el registro de la tabla de registros
+            registroRepository.delete(registro);
+        }
 
         // Guardar el lote actualizado
         return loteRepository.save(lote);

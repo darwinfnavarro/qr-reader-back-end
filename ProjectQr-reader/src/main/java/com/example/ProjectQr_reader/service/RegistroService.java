@@ -27,6 +27,12 @@ public class RegistroService {
     private RegistroRepository registroRepository;
 
     @Autowired
+    private RegistrosRechazadosRepository registrosRechazadosRepository;
+
+    @Autowired
+    private RegistrosAutorizadosRepository registrosAutorizadosRepository;
+
+    @Autowired
     private LoteService loteService;
 
     /**
@@ -105,5 +111,44 @@ public class RegistroService {
                 ))
                 .collect(Collectors.toList());
     }
+
+    public List<RegistroDTO> obtenerRegistrosAutorizados() {
+        // Obtener los registros autorizados
+        List<RegistrosAutorizados> registrosAutorizados = registrosAutorizadosRepository.findAll();
+
+        // Convertir los registros aprobados a RegistroDTO y devolver la lista
+        return registrosAutorizados.stream()
+                .map(registroAprobado -> new RegistroDTO(
+                        registroAprobado.getProductoId(),
+                        "",  // imei
+                        "",  // nombreProducto
+                        "",  // nombreBodega
+                        "",  // descripcionServicio
+                        registroAprobado.getFechaRegistro().toString(),
+                        registroAprobado.getLoteId()
+                ))
+                .collect(Collectors.toList());
+    }
+
+    public List<RegistroDTO> obtenerRegistrosRechazados() {
+        // Obtener los registros rechazados
+        List<RegistrosRechazados> registrosRechazados = registrosRechazadosRepository.findAll();
+
+        // Convertir los registros rechazados a RegistroDTO y devolver la lista
+        return registrosRechazados.stream()
+                .map(registroRechazado -> new RegistroDTO(
+                        registroRechazado.getProductoId(),
+                        "",  // imei
+                        "",  // nombreProducto
+                        "",  // nombreBodega
+                        "",  // descripcionServicio
+                        registroRechazado.getFechaRegistro().toString(),
+                        registroRechazado.getLoteId()
+                ))
+                .collect(Collectors.toList());
+    }
+
+
+
 
 }
