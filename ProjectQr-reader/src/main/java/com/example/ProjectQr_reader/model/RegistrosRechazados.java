@@ -16,17 +16,21 @@ public class RegistrosRechazados {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @Column(name = "producto_id")
-    private Integer productoId;
+    @ManyToOne
+    @JoinColumn(name = "producto_id")
+    private Producto producto;
 
-    @Column(name = "bodega_id")
-    private Integer bodegaId;
+    @ManyToOne
+    @JoinColumn(name = "bodega_id")
+    private Bodega bodega;
 
-    @Column(name = "servicio_id")
-    private Integer servicioId;
+    @ManyToOne
+    @JoinColumn(name = "servicio_id")
+    private Servicio servicio;
 
-    @Column(name = "lote_id")
-    private Integer loteId;
+    @ManyToOne
+    @JoinColumn(name = "lote_id")
+    private Lote lote;
 
     @Column(name = "fecha_registro")
     private LocalDateTime fechaRegistro;

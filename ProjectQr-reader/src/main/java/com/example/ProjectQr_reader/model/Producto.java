@@ -59,8 +59,8 @@ public class Producto {
     @Column(name = "Activo")
     private Boolean activo;
 
-    @Column(name = "clienteId")  // Cambiado de ClienteId a BodegaId
-    private Integer bodegaId;
+    @Column(name = "clienteId")
+    private Integer clienteId;
 
     @Column(name = "Moneda")
     private String moneda;

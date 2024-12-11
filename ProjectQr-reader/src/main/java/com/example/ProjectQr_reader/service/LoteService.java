@@ -10,8 +10,11 @@ import com.example.ProjectQr_reader.repository.RegistrosAutorizadosRepository;
 import com.example.ProjectQr_reader.repository.RegistrosRechazadosRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 public class LoteService {
@@ -29,87 +32,96 @@ public class LoteService {
     private RegistrosAutorizadosRepository registrosAutorizadosRepository;
 
     /**
-     * Crea un lote si no existe uno con la misma fecha actual.
-     * Si ya existe, lo reutiliza.
+     * Crea un lote nuevo con estado "Pendiente".
      *
-     * @return Lote creado o existente.
+     * @return Lote creado.
      */
     public Lote crearLote() {
-        // Crear un nuevo lote con la fecha actual
         Lote lote = new Lote();
         lote.setFechaCreacion(LocalDateTime.now());
-        lote.setEstado(Lote.ESTADO_PENDIENTE); // Asignar la fecha y hora actuales
-        lote = loteRepository.save(lote);  // Guardar el nuevo lote en la base de datos
-
-        return lote;  // Retornar el lote creado
+        lote.setEstado(Lote.ESTADO_PENDIENTE);
+        return loteRepository.save(lote);
     }
 
     /**
-     * Autoriza un lote por su ID y cambia su estado a "Autorizado".
+     * Autoriza un lote, cambia su estado a "Autorizado" y mueve los registros pendientes a la tabla de autorizados.
      *
      * @param loteId El ID del lote a autorizar.
-     * @return Lote actualizado con estado "Autorizado".
+     * @return Lote actualizado.
      */
     public Lote autorizarLote(Integer loteId) {
-        Lote lote = loteRepository.findById(loteId).orElseThrow(() -> new IllegalArgumentException("Lote no encontrado"));
+        Lote lote = loteRepository.findById(loteId)
+                .orElseThrow(() -> new IllegalArgumentException("Lote no encontrado"));
 
-        // Cambiar el estado del lote a "Autorizado" usando la constante de Lote
         lote.setEstado(Lote.ESTADO_AUTORIZADO);
         List<Registro> registrosPendientes = registroRepository.findRegistrosByLoteEstado("Pendiente");
 
         for (Registro registro : registrosPendientes) {
-            // Crear el nuevo registro para la tabla de rechazados
             RegistrosAutorizados registroAutorizado = new RegistrosAutorizados();
-            registroAutorizado.setProductoId(registro.getProducto().getId());
-            registroAutorizado.setBodegaId(registro.getBodega().getId());
-            registroAutorizado.setServicioId(registro.getServicio().getId());
-            registroAutorizado.setLoteId(loteId);
+            registroAutorizado.setProducto(registro.getProducto());
+            registroAutorizado.setBodega(registro.getBodega());
+            registroAutorizado.setServicio(registro.getServicio());
+            registroAutorizado.setLote(registro.getLote());
             registroAutorizado.setFechaRegistro(LocalDateTime.now());
 
-            // Guardar el registro en la tabla de rechazados
             registrosAutorizadosRepository.save(registroAutorizado);
-
-            // Eliminar el registro de la tabla de registros
             registroRepository.delete(registro);
         }
 
-        // Guardar el lote actualizado
         return loteRepository.save(lote);
     }
 
     /**
-     * Rechaza un lote por su ID, cambia su estado a "Rechazado" y mueve los registros a la tabla de rechazados.
+     * Rechaza un lote, cambia su estado a "Rechazado" y mueve los registros pendientes a la tabla de rechazados.
      *
      * @param loteId El ID del lote a rechazar.
-     * @return Lote actualizado con estado "Rechazado".
+     * @return Lote actualizado.
      */
     public Lote rechazarLote(Integer loteId) {
-        Lote lote = loteRepository.findById(loteId).orElseThrow(() -> new IllegalArgumentException("Lote no encontrado"));
+        Lote lote = loteRepository.findById(loteId)
+                .orElseThrow(() -> new IllegalArgumentException("Lote no encontrado"));
 
-        // Cambiar el estado del lote a "Rechazado"
         lote.setEstado(Lote.ESTADO_RECHAZADO);
-
-        // Mover los registros pendientes a la tabla de rechazados
         List<Registro> registrosPendientes = registroRepository.findRegistrosByLoteEstado("Pendiente");
 
         for (Registro registro : registrosPendientes) {
-            // Crear el nuevo registro para la tabla de rechazados
             RegistrosRechazados registroRechazado = new RegistrosRechazados();
-            registroRechazado.setProductoId(registro.getProducto().getId());
-            registroRechazado.setBodegaId(registro.getBodega().getId());
-            registroRechazado.setServicioId(registro.getServicio().getId());
-            registroRechazado.setLoteId(loteId);
+            registroRechazado.setProducto(registro.getProducto());
+            registroRechazado.setBodega(registro.getBodega());
+            registroRechazado.setServicio(registro.getServicio());
+            registroRechazado.setLote(registro.getLote());
             registroRechazado.setFechaRegistro(LocalDateTime.now());
 
-            // Guardar el registro en la tabla de rechazados
             registrosRechazadosRepository.save(registroRechazado);
-
-            // Eliminar el registro de la tabla de registros
             registroRepository.delete(registro);
         }
 
-        // Guardar el lote con el estado actualizado
         return loteRepository.save(lote);
     }
 
+    /**
+     * Obtiene los registros rechazados agrupados por lote.
+     *
+     * @return Un mapa donde la clave es el lote y el valor es la lista de registros rechazados.
+     */
+    public Map<Lote, List<RegistrosRechazados>> obtenerRegistrosRechazadosPorLote() {
+        List<RegistrosRechazados> registrosRechazados = registrosRechazadosRepository.findAll();
+
+        // Agrupar los registros rechazados por lote
+        return registrosRechazados.stream()
+                .collect(Collectors.groupingBy(RegistrosRechazados::getLote));
+    }
+
+    /**
+     * Obtiene los registros autorizados agrupados por lote.
+     *
+     * @return Un mapa donde la clave es el lote y el valor es la lista de registros autorizados.
+     */
+    public Map<Lote, List<RegistrosAutorizados>> obtenerRegistrosAutorizadosPorLote() {
+        List<RegistrosAutorizados> registrosAutorizados = registrosAutorizadosRepository.findAll();
+
+        // Agrupar los registros autorizados por lote
+        return registrosAutorizados.stream()
+                .collect(Collectors.groupingBy(RegistrosAutorizados::getLote));
+    }
 }
