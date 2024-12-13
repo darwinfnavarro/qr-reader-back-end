@@ -10,6 +10,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1/bodegas")
+@CrossOrigin(origins = "http://localhost:3000")
 public class BodegaController {
 
     @Autowired
