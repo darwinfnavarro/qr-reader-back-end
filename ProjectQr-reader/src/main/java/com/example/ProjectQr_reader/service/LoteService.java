@@ -49,7 +49,7 @@ public class LoteService {
     }
 
     /**
-     * Autoriza un lote, cambia su estado a "Autorizado" y mueve los registros pendientes a la tabla de autorizados.
+     * Autoriza un lote, cambia su estado a "Autorizado" y mueve los registros de ese lote a la tabla de autorizados.
      * Además, actualiza la descripción del producto y el clienteId en la tabla Productos.
      *
      * @param loteId El ID del lote a autorizar.
@@ -60,16 +60,14 @@ public class LoteService {
                 .orElseThrow(() -> new IllegalArgumentException("Lote no encontrado"));
 
         lote.setEstado(Lote.ESTADO_AUTORIZADO);
-        List<Registro> registrosPendientes = registroRepository.findRegistrosByLoteEstado("Pendiente");
+        List<Registro> registrosPendientes = registroRepository.findRegistrosByLoteId(loteId);
 
         for (Registro registro : registrosPendientes) {
-            // Actualizar la descripción y el clienteId del producto
             Producto producto = registro.getProducto();
             producto.setDescripcion(registro.getServicio().getDescripcion());
             producto.setClienteId(registro.getBodega().getId());
-            productoRepository.save(producto); // Guardar los cambios en el producto
+            productoRepository.save(producto);
 
-            // Mover registro a la tabla de autorizados
             RegistrosAutorizados registroAutorizado = new RegistrosAutorizados();
             registroAutorizado.setProducto(producto);
             registroAutorizado.setBodega(registro.getBodega());
@@ -85,7 +83,7 @@ public class LoteService {
     }
 
     /**
-     * Rechaza un lote, cambia su estado a "Rechazado" y mueve los registros pendientes a la tabla de rechazados.
+     * Rechaza un lote, cambia su estado a "Rechazado" y mueve los registros de ese lote a la tabla de rechazados.
      *
      * @param loteId El ID del lote a rechazar.
      * @return Lote actualizado.
@@ -95,7 +93,7 @@ public class LoteService {
                 .orElseThrow(() -> new IllegalArgumentException("Lote no encontrado"));
 
         lote.setEstado(Lote.ESTADO_RECHAZADO);
-        List<Registro> registrosPendientes = registroRepository.findRegistrosByLoteEstado("Pendiente");
+        List<Registro> registrosPendientes = registroRepository.findRegistrosByLoteId(loteId);
 
         for (Registro registro : registrosPendientes) {
             RegistrosRechazados registroRechazado = new RegistrosRechazados();
@@ -120,7 +118,6 @@ public class LoteService {
     public Map<Lote, List<RegistrosRechazados>> obtenerRegistrosRechazadosPorLote() {
         List<RegistrosRechazados> registrosRechazados = registrosRechazadosRepository.findAll();
 
-        // Agrupar los registros rechazados por lote
         return registrosRechazados.stream()
                 .collect(Collectors.groupingBy(RegistrosRechazados::getLote));
     }
@@ -133,7 +130,6 @@ public class LoteService {
     public Map<Lote, List<RegistrosAutorizados>> obtenerRegistrosAutorizadosPorLote() {
         List<RegistrosAutorizados> registrosAutorizados = registrosAutorizadosRepository.findAll();
 
-        // Agrupar los registros autorizados por lote
         return registrosAutorizados.stream()
                 .collect(Collectors.groupingBy(RegistrosAutorizados::getLote));
     }

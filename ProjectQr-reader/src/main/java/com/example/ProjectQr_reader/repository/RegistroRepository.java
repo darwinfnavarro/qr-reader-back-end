@@ -22,6 +22,10 @@ public interface RegistroRepository extends JpaRepository<Registro, Integer> {
             "JOIN FETCH r.servicio s " +
             "WHERE l.estado = :estado")
     List<Registro> findRegistrosByLoteEstado(String estado);
+
+    @Query("SELECT r FROM Registro r WHERE r.lote.id = :loteId")
+    List<Registro> findRegistrosByLoteId(Integer loteId);
 }
+
 
 
