@@ -20,15 +20,6 @@ public class Producto {
     @Column(name = "Descripcion")
     private String descripcion;
 
-    @Column(name = "PhysId")
-    private String physId;
-
-    @Column(name = "NumeroGpsPlataforma")
-    private Integer numeroGpsPlataforma;
-
-    @Column(name = "Vehiculo")
-    private String vehiculo;
-
     @Column(name = "Observacion")
     private String observacion;
 
@@ -38,42 +29,8 @@ public class Producto {
     @Column(name = "IMEI")
     private String imei;
 
-    @Column(name = "Serie")
-    private String serie;
-
-    @Column(name = "FechaInicio")
-    private LocalDate fechaInicio;
-
-    @Column(name = "FechaFin")
-    private LocalDate fechaFin;
-
-    @Column(name = "Precio")
-    private BigDecimal precio;
-
-    @Column(name = "PrecioMoneda")
-    private BigDecimal precioMoneda;
-
-    @Column(name = "ValorCambio")
-    private BigDecimal valorCambio;
-
-    @Column(name = "Activo")
-    private Boolean activo;
-
     @Column(name = "ClienteId")
     private Integer clienteId;
 
-    @Column(name = "Moneda")
-    private String moneda;
 
-    @Column(name = "ProductoSerieId")
-    private Integer productoSerieId;
-
-    @Column(name = "Cantidad")
-    private Integer cantidad;
-
-    @Column(name = "MonedaId")
-    private Integer monedaId;
-
-    @Column(name = "ICCId")
-    private String iccId;
 }
