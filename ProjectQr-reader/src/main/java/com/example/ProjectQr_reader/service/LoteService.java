@@ -64,8 +64,8 @@ public class LoteService {
 
         for (Registro registro : registrosPendientes) {
             Producto producto = registro.getProducto();
-            producto.setServicioId(registro.getServicio().getId());
-            producto.setBodegaId(registro.getBodega().getId());
+            producto.setServicio(registro.getServicio());
+            producto.setBodega(registro.getBodega());
             productoRepository.save(producto);
 
             RegistrosAutorizados registroAutorizado = new RegistrosAutorizados();

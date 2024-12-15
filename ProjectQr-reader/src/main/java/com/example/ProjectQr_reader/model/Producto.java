@@ -1,11 +1,9 @@
 package com.example.ProjectQr_reader.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
-
-import java.math.BigDecimal;
-import java.time.LocalDate;
 
 @Entity
 @Getter
@@ -14,14 +12,19 @@ import java.time.LocalDate;
 public class Producto {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "Id")
     private Integer id;
 
-    @Column(name = "bodega_id")
-    private Integer bodegaId;
+    @ManyToOne
+    @JoinColumn(name = "bodega_id", referencedColumnName = "Id", nullable = false)
+    @JsonBackReference
+    private Bodega bodega;
 
-    @Column(name = "servicio_id")
-    private Integer servicioId;
+    @ManyToOne
+    @JoinColumn(name = "servicio_id", referencedColumnName = "Id", nullable = false)
+    @JsonBackReference
+    private Servicio servicio; // Cambiado a relacion ManyToOne con Servicio
 
     @Column(name = "Observacion")
     private String observacion;
@@ -31,8 +34,4 @@ public class Producto {
 
     @Column(name = "IMEI")
     private String imei;
-
-
-
-
 }

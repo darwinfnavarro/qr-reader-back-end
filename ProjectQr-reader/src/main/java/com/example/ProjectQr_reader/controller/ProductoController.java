@@ -1,10 +1,13 @@
 package com.example.ProjectQr_reader.controller;
 
 import com.example.ProjectQr_reader.model.Producto;
+import com.example.ProjectQr_reader.dto.ProductoResponse;
 import com.example.ProjectQr_reader.service.ProductoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @CrossOrigin(origins = "http://localhost:3000")
@@ -25,5 +28,10 @@ public class ProductoController {
     public ResponseEntity<Producto> obtenerProductoPorImei(@PathVariable String imei) {
         Producto producto = productoService.obtenerProductoPorImei(imei);
         return ResponseEntity.ok(producto);
+    }
+
+    @GetMapping("/productos")
+    public List<ProductoResponse> obtenerInformacionProductos() {
+        return productoService.obtenerInformacionProductos();
     }
 }
