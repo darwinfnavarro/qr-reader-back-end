@@ -17,8 +17,8 @@ public class Producto {
     @Column(name = "Id")
     private Integer id;
 
-    @Column(name = "Descripcion")
-    private String descripcion;
+    @Column(name = "id_plataforma")
+    private String idPlataforma;
 
     @Column(name = "Observacion")
     private String observacion;
@@ -29,8 +29,8 @@ public class Producto {
     @Column(name = "IMEI")
     private String imei;
 
-    @Column(name = "ClienteId")
-    private Integer clienteId;
+    @Column(name = "bodega_id")
+    private Integer bodegaId;
 
 
 }
