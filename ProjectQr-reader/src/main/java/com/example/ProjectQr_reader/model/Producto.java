@@ -17,8 +17,11 @@ public class Producto {
     @Column(name = "Id")
     private Integer id;
 
-    @Column(name = "id_plataforma")
-    private String idPlataforma;
+    @Column(name = "bodega_id")
+    private Integer bodegaId;
+
+    @Column(name = "servicio_id")
+    private Integer servicioId;
 
     @Column(name = "Observacion")
     private String observacion;
@@ -29,8 +32,7 @@ public class Producto {
     @Column(name = "IMEI")
     private String imei;
 
-    @Column(name = "bodega_id")
-    private Integer bodegaId;
+
 
 
 }
